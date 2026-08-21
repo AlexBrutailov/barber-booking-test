@@ -322,6 +322,13 @@
       height: 1px !important;
       overflow: hidden !important;
     }
+
+    .choice:disabled,
+    .slot:disabled,
+    .date-input:disabled {
+      cursor: not-allowed;
+      opacity: .55;
+    }
     @media (max-width: 680px) {
       .page { margin-top: 22px; }
       .step { padding: 20px 16px; }
@@ -504,7 +511,8 @@
       service: null,
       employee: null,
       date: '',
-      time: ''
+      time: '',
+      bookingCompleted: false
     };
 
     const els = {
@@ -655,6 +663,8 @@
         `;
 
         button.addEventListener('click', () => {
+          if (state.bookingCompleted) return;
+
           state.service = service;
           state.time = '';
 
@@ -709,6 +719,8 @@
     }
 
     function selectEmployee(employee, button, shouldScroll = true) {
+      if (state.bookingCompleted) return;
+
       state.employee = employee;
       state.time = '';
 
@@ -739,6 +751,11 @@
       els.bookingDate.max = max;
 
       els.bookingDate.addEventListener('change', () => {
+        if (state.bookingCompleted) {
+          els.bookingDate.value = state.date;
+          return;
+        }
+
         state.date = els.bookingDate.value;
         state.time = '';
         els.summaryStep.hidden = true;
@@ -790,6 +807,8 @@
           button.textContent = time;
 
           button.addEventListener('click', () => {
+            if (state.bookingCompleted) return;
+
             state.time = time;
 
             [...grid.querySelectorAll('.slot')]
@@ -905,6 +924,22 @@
       );
     }
 
+    function lockBookingInterfaceAfterSuccess() {
+      state.bookingCompleted = true;
+
+      document
+        .querySelectorAll(
+          '.choice, .slot'
+        )
+        .forEach(
+          element => {
+            element.disabled = true;
+          }
+        );
+
+      els.bookingDate.disabled = true;
+    }
+
     function handleBookingResult(data) {
 
       setBookingLoading(false);
@@ -918,6 +953,16 @@
               'Не удалось создать запись.'
             )
           }</div>`;
+
+        if (
+          data?.code ===
+          'PHONE_DAILY_LIMIT'
+        ) {
+          els.bookingMessage.innerHTML =
+            '<div class="error"><strong>На этот номер уже есть запись на выбранную дату.</strong><br>Чтобы изменить время, используйте другую дату или свяжитесь с администратором.</div>';
+
+          return;
+        }
 
         if (
           data?.code ===
@@ -949,6 +994,8 @@
         return;
       }
 
+      lockBookingInterfaceAfterSuccess();
+
       els.bookingForm.hidden = true;
       els.bookingSuccess.hidden = false;
 
@@ -974,6 +1021,11 @@
           <p class="success-id">
             Номер записи:
             ${escapeHtml(data.bookingId)}
+          </p>
+
+          <p>
+            Запись завершена. Чтобы оформить еще одну запись,
+            обновите страницу.
           </p>
         </div>
       `;
