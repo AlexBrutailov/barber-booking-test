@@ -398,7 +398,7 @@
           <span class="step__number">✓</span>
           <div>
             <h2>Выбор готов</h2>
-            <p class="step__hint">На следующем этапе подключим создание записи клиента.</p>
+            <p class="step__hint">Проверьте выбор и укажите свои данные.</p>
           </div>
         </div>
 
@@ -830,6 +830,8 @@
     function setupBookingForm() {
       els.bookingForm.action = API_URL;
 
+      let bookingResponseTimer = null;
+
       els.bookingForm.addEventListener('submit', event => {
         if (!state.service || !state.employee || !state.date || !state.time) {
           event.preventDefault();
@@ -846,6 +848,14 @@
         setBookingLoading(true);
         els.bookingMessage.innerHTML =
           '<div class="loading">Проверяем время и создаем запись…</div>';
+
+        clearTimeout(bookingResponseTimer);
+
+        bookingResponseTimer = setTimeout(() => {
+          setBookingLoading(false);
+          els.bookingMessage.innerHTML =
+            '<div class="error">Сервер не прислал подтверждение вовремя. Обновите страницу и проверьте выбранное время. Если слот исчез, запись могла уже сохраниться.</div>';
+        }, 20000);
       });
 
       window.addEventListener('message', event => {
@@ -861,6 +871,7 @@
           return;
         }
 
+        clearTimeout(bookingResponseTimer);
         setBookingLoading(false);
 
         if (!data.ok) {
