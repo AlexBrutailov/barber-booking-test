@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Онлайн-запись в барбершоп</title>
   <meta name="description" content="Тестовый сервис онлайн-записи в барбершоп">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✂️</text></svg>">
   <style>
     :root {
       --bg: #f6f7f9;
@@ -751,11 +752,18 @@
       });
     }
 
-    async function loadSlots() {
+    async function loadSlots(options = {}) {
       if (!state.service || !state.employee || !state.date) return;
 
+      const preserveSummary =
+        Boolean(options.preserveSummary);
+
       els.slotStep.hidden = false;
-      els.summaryStep.hidden = true;
+
+      if (!preserveSummary) {
+        els.summaryStep.hidden = true;
+      }
+
       els.slots.innerHTML = '<div class="loading">Проверяем свободное время…</div>';
 
       try {
@@ -801,6 +809,8 @@
     }
 
     function showSummary() {
+      setBookingLoading(false);
+
       els.summaryService.textContent =
         `${state.service.name} · ${state.service.duration} мин. · ${formatPrice(state.service.price)}`;
       els.summaryEmployee.textContent = state.employee.name;
@@ -914,7 +924,26 @@
           'SLOT_UNAVAILABLE'
         ) {
           state.time = '';
-          loadSlots();
+
+          els.formTime.value = '';
+          els.summaryTime.textContent =
+            'Нужно выбрать другое время';
+
+          els.bookingSubmit.disabled = true;
+
+          els.bookingMessage.innerHTML =
+            '<div class="error"><strong>Это время только что заняли.</strong><br>Мы уже обновляем доступные слоты. Выберите другое свободное время.</div>';
+
+          loadSlots({
+            preserveSummary: true
+          }).then(() => {
+            els.slotStep.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center'
+            });
+          });
+
+          return;
         }
 
         return;
