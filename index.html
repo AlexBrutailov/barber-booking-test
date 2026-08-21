@@ -1,0 +1,695 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Онлайн-запись в барбершоп</title>
+  <meta name="description" content="Тестовый сервис онлайн-записи в барбершоп">
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --card: #ffffff;
+      --text: #14171a;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --accent: #111827;
+      --accent-soft: #eef0f3;
+      --ok: #16794a;
+      --danger: #b42318;
+      --shadow: 0 14px 40px rgba(17, 24, 39, .08);
+      --radius: 20px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .page {
+      width: min(920px, calc(100% - 28px));
+      margin: 36px auto 64px;
+    }
+    .hero { margin-bottom: 24px; }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(32px, 6vw, 54px);
+      line-height: 1;
+      letter-spacing: -.045em;
+    }
+    .hero__text {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.6;
+    }
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: var(--card);
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .status__dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #9ca3af;
+    }
+    .status--ok .status__dot { background: var(--ok); }
+    .status--error .status__dot { background: var(--danger); }
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .step {
+      padding: 26px;
+      border-bottom: 1px solid var(--border);
+    }
+    .step:last-child { border-bottom: 0; }
+    .step[hidden] { display: none; }
+    .step__head {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+    .step__number {
+      display: grid;
+      place-items: center;
+      flex: 0 0 34px;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      font-weight: 800;
+      font-size: 14px;
+    }
+    .step h2 {
+      margin: 2px 0 4px;
+      font-size: 22px;
+      letter-spacing: -.02em;
+    }
+    .step__hint {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .choice {
+      position: relative;
+      width: 100%;
+      padding: 18px;
+      text-align: left;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: white;
+      color: var(--text);
+      transition: .18s ease;
+    }
+    .choice:hover {
+      transform: translateY(-1px);
+      border-color: #b7bcc5;
+    }
+    .choice.is-active {
+      border-color: var(--accent);
+      box-shadow: inset 0 0 0 1px var(--accent);
+      background: #fafafa;
+    }
+    .choice__title {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 17px;
+      font-weight: 800;
+    }
+    .choice__meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 12px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .date-wrap { max-width: 320px; }
+    .date-label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--muted);
+    }
+    .date-input {
+      width: 100%;
+      min-height: 50px;
+      padding: 0 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: white;
+      color: var(--text);
+      outline: none;
+    }
+    .date-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(17, 24, 39, .08);
+    }
+    .slots {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 9px;
+    }
+    .slot {
+      min-height: 46px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: white;
+      color: var(--text);
+      font-weight: 750;
+      transition: .16s ease;
+    }
+    .slot:hover { border-color: var(--accent); }
+    .slot.is-active {
+      color: white;
+      border-color: var(--accent);
+      background: var(--accent);
+    }
+    .empty, .loading, .error {
+      padding: 14px 16px;
+      border-radius: 14px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .loading, .empty {
+      background: var(--accent-soft);
+      color: var(--muted);
+    }
+    .error {
+      background: #fef3f2;
+      color: var(--danger);
+    }
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .summary__item {
+      padding: 14px;
+      border-radius: 14px;
+      background: var(--accent-soft);
+    }
+    .summary__label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+    .summary__value {
+      font-size: 15px;
+      font-weight: 800;
+    }
+    .next {
+      width: 100%;
+      min-height: 52px;
+      border: 0;
+      border-radius: 14px;
+      background: var(--accent);
+      color: white;
+      font-weight: 800;
+    }
+    .next:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+    .dev-note {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    @media (max-width: 680px) {
+      .page { margin-top: 22px; }
+      .step { padding: 20px 16px; }
+      .cards { grid-template-columns: 1fr; }
+      .slots { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .summary { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <p class="eyebrow">Barber test</p>
+      <h1>Онлайн-запись</h1>
+      <p class="hero__text">Выберите услугу, мастера, дату и свободное время.</p>
+      <div class="status" id="apiStatus">
+        <span class="status__dot"></span>
+        <span id="apiStatusText">Подключаемся к API…</span>
+      </div>
+    </header>
+
+    <section class="panel">
+      <div class="step" id="serviceStep">
+        <div class="step__head">
+          <span class="step__number">1</span>
+          <div>
+            <h2>Услуга</h2>
+            <p class="step__hint">Данные загружаются из листа «Услуги».</p>
+          </div>
+        </div>
+        <div id="services" class="cards">
+          <div class="loading">Загружаем услуги…</div>
+        </div>
+      </div>
+
+      <div class="step" id="employeeStep" hidden>
+        <div class="step__head">
+          <span class="step__number">2</span>
+          <div>
+            <h2>Мастер</h2>
+            <p class="step__hint">Показываем только активных сотрудников.</p>
+          </div>
+        </div>
+        <div id="employees" class="cards"></div>
+      </div>
+
+      <div class="step" id="dateStep" hidden>
+        <div class="step__head">
+          <span class="step__number">3</span>
+          <div>
+            <h2>Дата</h2>
+            <p class="step__hint">Период записи берется из листа «Настройки».</p>
+          </div>
+        </div>
+        <div class="date-wrap">
+          <label class="date-label" for="bookingDate">Дата визита</label>
+          <input class="date-input" type="date" id="bookingDate">
+        </div>
+      </div>
+
+      <div class="step" id="slotStep" hidden>
+        <div class="step__head">
+          <span class="step__number">4</span>
+          <div>
+            <h2>Свободное время</h2>
+            <p class="step__hint">API учитывает график, длительность услуги, отпуска и занятые записи.</p>
+          </div>
+        </div>
+        <div id="slots"></div>
+      </div>
+
+      <div class="step" id="summaryStep" hidden>
+        <div class="step__head">
+          <span class="step__number">✓</span>
+          <div>
+            <h2>Выбор готов</h2>
+            <p class="step__hint">На следующем этапе подключим создание записи клиента.</p>
+          </div>
+        </div>
+
+        <div class="summary">
+          <div class="summary__item">
+            <span class="summary__label">Услуга</span>
+            <span class="summary__value" id="summaryService">—</span>
+          </div>
+          <div class="summary__item">
+            <span class="summary__label">Мастер</span>
+            <span class="summary__value" id="summaryEmployee">—</span>
+          </div>
+          <div class="summary__item">
+            <span class="summary__label">Дата</span>
+            <span class="summary__value" id="summaryDate">—</span>
+          </div>
+          <div class="summary__item">
+            <span class="summary__label">Время</span>
+            <span class="summary__value" id="summaryTime">—</span>
+          </div>
+        </div>
+
+        <button class="next" type="button" disabled>Создание записи подключим следующим шагом</button>
+        <p class="dev-note">Сейчас кнопка намеренно отключена: этот MVP пока только читает данные и проверяет свободные слоты.</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const API_URL =
+      'https://script.google.com/macros/s/AKfycbyVcf_awph-29zK58Qm8K6-DpZTVxt-9lKK83TTBBO8Wl3BLifvG_AxPzJ691jgbECJhQ/exec';
+
+    const state = {
+      services: [],
+      employees: [],
+      settings: null,
+      service: null,
+      employee: null,
+      date: '',
+      time: ''
+    };
+
+    const els = {
+      apiStatus: document.getElementById('apiStatus'),
+      apiStatusText: document.getElementById('apiStatusText'),
+      services: document.getElementById('services'),
+      employees: document.getElementById('employees'),
+      bookingDate: document.getElementById('bookingDate'),
+      slots: document.getElementById('slots'),
+      employeeStep: document.getElementById('employeeStep'),
+      dateStep: document.getElementById('dateStep'),
+      slotStep: document.getElementById('slotStep'),
+      summaryStep: document.getElementById('summaryStep'),
+      summaryService: document.getElementById('summaryService'),
+      summaryEmployee: document.getElementById('summaryEmployee'),
+      summaryDate: document.getElementById('summaryDate'),
+      summaryTime: document.getElementById('summaryTime')
+    };
+
+    function setApiStatus(type, text) {
+      els.apiStatus.classList.remove('status--ok', 'status--error');
+      if (type === 'ok') els.apiStatus.classList.add('status--ok');
+      if (type === 'error') els.apiStatus.classList.add('status--error');
+      els.apiStatusText.textContent = text;
+    }
+
+    function jsonp(params) {
+      return new Promise((resolve, reject) => {
+        const callbackName =
+          '__barberJsonp_' + Date.now() + '_' + Math.random().toString(36).slice(2);
+
+        const script = document.createElement('script');
+        const query = new URLSearchParams({
+          ...params,
+          prefix: callbackName,
+          _: Date.now()
+        });
+
+        const timeout = setTimeout(() => {
+          cleanup();
+          reject(new Error('API не ответил вовремя'));
+        }, 12000);
+
+        function cleanup() {
+          clearTimeout(timeout);
+          delete window[callbackName];
+          script.remove();
+        }
+
+        window[callbackName] = data => {
+          cleanup();
+
+          if (!data || data.ok === false) {
+            reject(new Error(data?.error || 'Неизвестная ошибка API'));
+            return;
+          }
+
+          resolve(data);
+        };
+
+        script.onerror = () => {
+          cleanup();
+          reject(new Error('Не удалось загрузить ответ API'));
+        };
+
+        script.src = API_URL + '?' + query.toString();
+        document.head.appendChild(script);
+      });
+    }
+
+    function formatPrice(value) {
+      return new Intl.NumberFormat('ru-RU').format(Number(value || 0)) + ' ₽';
+    }
+
+    function formatDateRu(isoDate) {
+      if (!isoDate) return '—';
+      const [year, month, day] = isoDate.split('-').map(Number);
+      return new Intl.DateTimeFormat('ru-RU', {
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+      }).format(new Date(year, month - 1, day));
+    }
+
+    function dateInTimezone(timeZone) {
+      const parts = new Intl.DateTimeFormat('en-CA', {
+        timeZone,
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      }).formatToParts(new Date());
+
+      const map = Object.fromEntries(
+        parts.filter(p => p.type !== 'literal').map(p => [p.type, p.value])
+      );
+
+      return `${map.year}-${map.month}-${map.day}`;
+    }
+
+    function addDays(isoDate, days) {
+      const [year, month, day] = isoDate.split('-').map(Number);
+      const d = new Date(Date.UTC(year, month - 1, day));
+      d.setUTCDate(d.getUTCDate() + Number(days || 0));
+
+      return [
+        d.getUTCFullYear(),
+        String(d.getUTCMonth() + 1).padStart(2, '0'),
+        String(d.getUTCDate()).padStart(2, '0')
+      ].join('-');
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function renderServices() {
+      if (!state.services.length) {
+        els.services.innerHTML = '<div class="empty">Активных услуг пока нет.</div>';
+        return;
+      }
+
+      els.services.innerHTML = '';
+
+      state.services.forEach(service => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'choice';
+        button.innerHTML = `
+          <span class="choice__title">${escapeHtml(service.name)}</span>
+          <span class="choice__meta">
+            <span>${Number(service.duration)} мин.</span>
+            <span>${formatPrice(service.price)}</span>
+          </span>
+        `;
+
+        button.addEventListener('click', () => {
+          state.service = service;
+          state.time = '';
+
+          [...els.services.querySelectorAll('.choice')]
+            .forEach(item => item.classList.remove('is-active'));
+
+          button.classList.add('is-active');
+          els.employeeStep.hidden = false;
+          els.summaryStep.hidden = true;
+
+          if (state.employee && state.date) loadSlots();
+
+          els.employeeStep.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest'
+          });
+        });
+
+        els.services.appendChild(button);
+      });
+    }
+
+    function renderEmployees() {
+      if (!state.employees.length) {
+        els.employees.innerHTML = '<div class="empty">Активных сотрудников пока нет.</div>';
+        return;
+      }
+
+      els.employees.innerHTML = '';
+
+      state.employees.forEach(employee => {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'choice';
+        button.innerHTML = `
+          <span class="choice__title">${escapeHtml(employee.name)}</span>
+          <span class="choice__meta">
+            <span>${escapeHtml(employee.position || 'Мастер')}</span>
+          </span>
+        `;
+
+        button.addEventListener('click', () => {
+          selectEmployee(employee, button);
+        });
+
+        els.employees.appendChild(button);
+      });
+
+      if (state.employees.length === 1) {
+        selectEmployee(state.employees[0], els.employees.querySelector('.choice'), false);
+      }
+    }
+
+    function selectEmployee(employee, button, shouldScroll = true) {
+      state.employee = employee;
+      state.time = '';
+
+      [...els.employees.querySelectorAll('.choice')]
+        .forEach(item => item.classList.remove('is-active'));
+
+      if (button) button.classList.add('is-active');
+
+      els.dateStep.hidden = false;
+      els.summaryStep.hidden = true;
+
+      if (state.service && state.date) loadSlots();
+
+      if (shouldScroll) {
+        els.dateStep.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest'
+        });
+      }
+    }
+
+    function setupDateInput() {
+      const timezone = state.settings?.timezone || 'Europe/Moscow';
+      const today = dateInTimezone(timezone);
+      const max = addDays(today, state.settings?.bookingDaysAhead || 14);
+
+      els.bookingDate.min = today;
+      els.bookingDate.max = max;
+
+      els.bookingDate.addEventListener('change', () => {
+        state.date = els.bookingDate.value;
+        state.time = '';
+        els.summaryStep.hidden = true;
+
+        if (!state.date) {
+          els.slotStep.hidden = true;
+          return;
+        }
+
+        if (state.service && state.employee) loadSlots();
+      });
+    }
+
+    async function loadSlots() {
+      if (!state.service || !state.employee || !state.date) return;
+
+      els.slotStep.hidden = false;
+      els.summaryStep.hidden = true;
+      els.slots.innerHTML = '<div class="loading">Проверяем свободное время…</div>';
+
+      try {
+        const data = await jsonp({
+          action: 'slots',
+          employeeId: state.employee.id,
+          serviceId: state.service.id,
+          date: state.date
+        });
+
+        if (!Array.isArray(data.slots) || !data.slots.length) {
+          els.slots.innerHTML =
+            `<div class="empty">${escapeHtml(data.reason || 'Свободных окон на эту дату нет.')}</div>`;
+          return;
+        }
+
+        const grid = document.createElement('div');
+        grid.className = 'slots';
+
+        data.slots.forEach(time => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'slot';
+          button.textContent = time;
+
+          button.addEventListener('click', () => {
+            state.time = time;
+
+            [...grid.querySelectorAll('.slot')]
+              .forEach(item => item.classList.remove('is-active'));
+
+            button.classList.add('is-active');
+            showSummary();
+          });
+
+          grid.appendChild(button);
+        });
+
+        els.slots.replaceChildren(grid);
+      } catch (error) {
+        els.slots.innerHTML = `<div class="error">${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    function showSummary() {
+      els.summaryService.textContent =
+        `${state.service.name} · ${state.service.duration} мин. · ${formatPrice(state.service.price)}`;
+      els.summaryEmployee.textContent = state.employee.name;
+      els.summaryDate.textContent = formatDateRu(state.date);
+      els.summaryTime.textContent = state.time;
+
+      els.summaryStep.hidden = false;
+      els.summaryStep.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest'
+      });
+    }
+
+    async function init() {
+      try {
+        const data = await jsonp({ action: 'bootstrap' });
+
+        state.services = Array.isArray(data.services) ? data.services : [];
+        state.employees = Array.isArray(data.employees) ? data.employees : [];
+        state.settings = data.settings || {};
+
+        renderServices();
+        renderEmployees();
+        setupDateInput();
+
+        setApiStatus('ok', 'API подключен · данные загружены');
+      } catch (error) {
+        setApiStatus('error', 'Ошибка подключения к API');
+        els.services.innerHTML = `<div class="error">${escapeHtml(error.message)}</div>`;
+      }
+    }
+
+    init();
+  </script>
+</body>
+</html>
