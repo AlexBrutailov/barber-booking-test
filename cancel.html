@@ -1,0 +1,664 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Управление записью</title>
+  <meta name="description" content="Управление записью в барбершоп">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✂️</text></svg>">
+  <style>
+    :root {
+      --bg: #f6f7f9;
+      --card: #ffffff;
+      --text: #14171a;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --accent: #111827;
+      --danger: #b42318;
+      --danger-bg: #fef3f2;
+      --ok: #16794a;
+      --ok-bg: #ecfdf3;
+      --shadow: 0 14px 40px rgba(17,24,39,.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    button { font: inherit; cursor: pointer; }
+    .page {
+      width: min(680px, calc(100% - 28px));
+      margin: 44px auto 72px;
+    }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(32px, 7vw, 48px);
+      letter-spacing: -.04em;
+      line-height: 1;
+    }
+    .lead {
+      margin: 14px 0 24px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .card {
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+    .loading, .error, .ok, .notice {
+      padding: 15px 16px;
+      border-radius: 14px;
+      line-height: 1.55;
+    }
+    .loading, .notice {
+      background: #eef0f3;
+      color: var(--muted);
+    }
+    .error {
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+    .ok {
+      background: var(--ok-bg);
+      color: var(--ok);
+    }
+    .booking {
+      display: grid;
+      gap: 10px;
+    }
+    .booking__row {
+      display: grid;
+      grid-template-columns: 150px 1fr;
+      gap: 16px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .booking__row:last-child { border-bottom: 0; }
+    .label {
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .value { font-weight: 750; }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 22px;
+    }
+    .button {
+      min-height: 48px;
+      padding: 0 18px;
+      border-radius: 13px;
+      border: 1px solid var(--border);
+      font-weight: 800;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .button--danger {
+      border-color: #f3b4ae;
+      background: var(--danger);
+      color: white;
+    }
+    .button--danger:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+    .button--secondary {
+      background: white;
+      color: var(--text);
+    }
+    .confirm {
+      margin-top: 18px;
+      padding: 16px;
+      border-radius: 14px;
+      background: var(--danger-bg);
+      color: var(--danger);
+    }
+    .confirm strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+    .message { margin-top: 16px; }
+    [hidden] { display: none !important; }
+    @media (max-width: 520px) {
+      .page { margin-top: 24px; }
+      .card { padding: 18px; }
+      .booking__row {
+        grid-template-columns: 1fr;
+        gap: 4px;
+      }
+      .button { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <p class="eyebrow">Barber test</p>
+    <h1>Управление записью</h1>
+    <p class="lead">Здесь можно проверить запись и при необходимости отменить ее.</p>
+
+    <section class="card">
+      <div id="loading" class="loading">Загружаем запись…</div>
+      <div id="error" class="error" hidden></div>
+
+      <div id="content" hidden>
+        <div id="booking" class="booking"></div>
+
+        <div id="availability" class="notice message"></div>
+
+        <div class="actions">
+          <button
+            class="button button--danger"
+            id="cancelButton"
+            type="button"
+            hidden
+          >
+            Отменить запись
+          </button>
+
+          <a
+            class="button button--secondary"
+            href="./"
+          >
+            Вернуться к записи
+          </a>
+        </div>
+
+        <div id="confirmBox" class="confirm" hidden>
+          <strong>Точно отменить запись?</strong>
+          После отмены выбранное время снова станет доступно другим клиентам.
+
+          <div class="actions">
+            <button
+              class="button button--danger"
+              id="confirmCancelButton"
+              type="button"
+            >
+              Да, отменить
+            </button>
+
+            <button
+              class="button button--secondary"
+              id="keepButton"
+              type="button"
+            >
+              Нет, оставить
+            </button>
+          </div>
+        </div>
+
+        <div id="message" class="message"></div>
+      </div>
+    </section>
+
+    <iframe
+      id="cancelTarget"
+      name="cancelTarget"
+      title="Служебный ответ отмены"
+      hidden
+    ></iframe>
+
+    <form
+      id="cancelForm"
+      method="post"
+      target="cancelTarget"
+      hidden
+    >
+      <input type="hidden" name="action" value="cancelBooking">
+      <input type="hidden" name="token" id="formToken">
+      <input type="hidden" name="requestId" id="formRequestId">
+    </form>
+  </main>
+
+  <script>
+    const API_URL =
+      'https://script.google.com/macros/s/AKfycbyVcf_awph-29zK58Qm8K6-DpZTVxt-9lKK83TTBBO8Wl3BLifvG_AxPzJ691jgbECJhQ/exec';
+
+    const token =
+      new URLSearchParams(
+        window.location.search
+      ).get('token') || '';
+
+    const els = {
+      loading: document.getElementById('loading'),
+      error: document.getElementById('error'),
+      content: document.getElementById('content'),
+      booking: document.getElementById('booking'),
+      availability: document.getElementById('availability'),
+      cancelButton: document.getElementById('cancelButton'),
+      confirmBox: document.getElementById('confirmBox'),
+      confirmCancelButton: document.getElementById('confirmCancelButton'),
+      keepButton: document.getElementById('keepButton'),
+      message: document.getElementById('message'),
+      cancelForm: document.getElementById('cancelForm'),
+      formToken: document.getElementById('formToken'),
+      formRequestId: document.getElementById('formRequestId')
+    };
+
+    let currentInfo = null;
+
+    function escapeHtml(value) {
+      return String(value ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function formatPrice(value) {
+      return new Intl.NumberFormat('ru-RU')
+        .format(Number(value || 0)) + ' ₽';
+    }
+
+    function formatDateRu(isoDate) {
+      if (!isoDate) return '—';
+
+      const [year, month, day] =
+        isoDate
+          .split('-')
+          .map(Number);
+
+      return new Intl.DateTimeFormat(
+        'ru-RU',
+        {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric'
+        }
+      ).format(
+        new Date(
+          year,
+          month - 1,
+          day
+        )
+      );
+    }
+
+    function jsonp(params) {
+      return new Promise((resolve, reject) => {
+        const callbackName =
+          '__cancelJsonp_' +
+          Date.now() +
+          '_' +
+          Math.random()
+            .toString(36)
+            .slice(2);
+
+        const script =
+          document.createElement(
+            'script'
+          );
+
+        const query =
+          new URLSearchParams({
+            ...params,
+            prefix:
+              callbackName,
+            _:
+              Date.now()
+          });
+
+        const timeout =
+          setTimeout(
+            () => {
+              cleanup();
+              reject(
+                new Error(
+                  'API не ответил вовремя'
+                )
+              );
+            },
+            12000
+          );
+
+        function cleanup() {
+          clearTimeout(
+            timeout
+          );
+          delete window[
+            callbackName
+          ];
+          script.remove();
+        }
+
+        window[
+          callbackName
+        ] = data => {
+          cleanup();
+          resolve(data);
+        };
+
+        script.onerror =
+          () => {
+            cleanup();
+            reject(
+              new Error(
+                'Не удалось загрузить ответ API'
+              )
+            );
+          };
+
+        script.src =
+          API_URL +
+          '?' +
+          query.toString();
+
+        document.head
+          .appendChild(
+            script
+          );
+      });
+    }
+
+    function createRequestId() {
+      if (
+        window.crypto &&
+        crypto.getRandomValues
+      ) {
+        const bytes =
+          new Uint8Array(12);
+
+        crypto
+          .getRandomValues(
+            bytes
+          );
+
+        return [
+          ...bytes
+        ]
+          .map(
+            value =>
+              value
+                .toString(16)
+                .padStart(2, '0')
+          )
+          .join('');
+      }
+
+      return (
+        Date.now()
+          .toString(16) +
+        Math.random()
+          .toString(16)
+          .slice(2)
+      )
+        .replace(
+          /[^a-f0-9]/gi,
+          ''
+        )
+        .padEnd(
+          16,
+          '0'
+        )
+        .slice(
+          0,
+          24
+        )
+        .toLowerCase();
+    }
+
+    function delay(ms) {
+      return new Promise(
+        resolve =>
+          setTimeout(
+            resolve,
+            ms
+          )
+      );
+    }
+
+    async function waitForCancelResult(
+      requestId,
+      timeoutMs = 20000
+    ) {
+
+      const startedAt =
+        Date.now();
+
+      while (
+        Date.now() -
+        startedAt <
+        timeoutMs
+      ) {
+
+        const status =
+          await jsonp({
+            action:
+              'cancelStatus',
+            requestId:
+              requestId,
+            token:
+              token
+          });
+
+        if (
+          status &&
+          status.status ===
+            'done'
+        ) {
+          return status.result;
+        }
+
+        await delay(800);
+      }
+
+      throw new Error(
+        'Сервер не подтвердил отмену вовремя'
+      );
+    }
+
+    function renderInfo(info) {
+      currentInfo = info;
+
+      const booking =
+        info.booking;
+
+      els.booking.innerHTML = `
+        <div class="booking__row">
+          <span class="label">Услуга</span>
+          <span class="value">${escapeHtml(booking.serviceName)}</span>
+        </div>
+        <div class="booking__row">
+          <span class="label">Мастер</span>
+          <span class="value">${escapeHtml(booking.employeeName)}</span>
+        </div>
+        <div class="booking__row">
+          <span class="label">Дата</span>
+          <span class="value">${escapeHtml(formatDateRu(booking.date))}</span>
+        </div>
+        <div class="booking__row">
+          <span class="label">Время</span>
+          <span class="value">${escapeHtml(booking.time)}–${escapeHtml(booking.endTime)}</span>
+        </div>
+        <div class="booking__row">
+          <span class="label">Стоимость</span>
+          <span class="value">${escapeHtml(formatPrice(booking.price))}</span>
+        </div>
+        <div class="booking__row">
+          <span class="label">Статус</span>
+          <span class="value">${escapeHtml(booking.status)}</span>
+        </div>
+      `;
+
+      if (info.canCancel) {
+        els.availability.textContent =
+          `Самостоятельная отмена доступна не позднее чем за ${Number(info.minimumCancellationHours || 0)} ч. до визита.`;
+
+        els.cancelButton.hidden = false;
+      } else {
+        els.availability.textContent =
+          info.reason ||
+          'Самостоятельная отмена этой записи недоступна.';
+
+        els.cancelButton.hidden = true;
+      }
+
+      els.loading.hidden = true;
+      els.error.hidden = true;
+      els.content.hidden = false;
+    }
+
+    async function loadInfo() {
+      if (
+        !/^[a-f0-9]{32}$/i.test(
+          token
+        )
+      ) {
+        els.loading.hidden = true;
+        els.error.hidden = false;
+        els.error.textContent =
+          'Ссылка управления записью некорректна.';
+        return;
+      }
+
+      try {
+        const info =
+          await jsonp({
+            action:
+              'cancelInfo',
+            token:
+              token
+          });
+
+        if (
+          !info ||
+          info.ok === false
+        ) {
+          throw new Error(
+            info?.error ||
+            'Запись не найдена'
+          );
+        }
+
+        renderInfo(info);
+
+      } catch (error) {
+        els.loading.hidden = true;
+        els.error.hidden = false;
+        els.error.textContent =
+          error.message;
+      }
+    }
+
+    async function cancelBooking() {
+      const requestId =
+        createRequestId();
+
+      els.formToken.value =
+        token;
+
+      els.formRequestId.value =
+        requestId;
+
+      els.cancelForm.action =
+        API_URL;
+
+      els.confirmCancelButton.disabled =
+        true;
+
+      els.message.innerHTML =
+        '<div class="loading">Отменяем запись…</div>';
+
+      /*
+       * Сначала запускаем polling, затем отправляем POST.
+       */
+      const resultPromise =
+        waitForCancelResult(
+          requestId
+        );
+
+      els.cancelForm
+        .requestSubmit();
+
+      try {
+        const result =
+          await resultPromise;
+
+        if (
+          !result ||
+          result.ok === false
+        ) {
+          throw new Error(
+            result?.error ||
+            'Не удалось отменить запись'
+          );
+        }
+
+        els.confirmBox.hidden = true;
+        els.cancelButton.hidden = true;
+
+        els.message.innerHTML =
+          `<div class="ok">${escapeHtml(result.message || 'Запись отменена.')}</div>`;
+
+        try {
+          localStorage.removeItem(
+            'barberLastBookingCancelUrl'
+          );
+        } catch (error) {}
+
+        await loadInfo();
+
+      } catch (error) {
+        els.message.innerHTML =
+          `<div class="error">${escapeHtml(error.message)}</div>`;
+
+        els.confirmCancelButton.disabled =
+          false;
+      }
+    }
+
+    els.cancelButton
+      .addEventListener(
+        'click',
+        () => {
+          els.confirmBox.hidden = false;
+          els.cancelButton.hidden = true;
+          els.confirmBox.scrollIntoView({
+            behavior: 'smooth',
+            block: 'nearest'
+          });
+        }
+      );
+
+    els.keepButton
+      .addEventListener(
+        'click',
+        () => {
+          els.confirmBox.hidden = true;
+
+          if (
+            currentInfo &&
+            currentInfo.canCancel
+          ) {
+            els.cancelButton.hidden = false;
+          }
+        }
+      );
+
+    els.confirmCancelButton
+      .addEventListener(
+        'click',
+        cancelBooking
+      );
+
+    loadInfo();
+  </script>
+</body>
+</html>
