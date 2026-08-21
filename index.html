@@ -315,6 +315,37 @@
       font-size: 13px;
       word-break: break-all;
     }
+    .manage-last {
+      display: inline-flex;
+      margin-top: 12px;
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 750;
+      text-decoration: none;
+    }
+    .manage-last:hover { text-decoration: underline; }
+    .success-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .success-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: 12px;
+      border: 1px solid #84d4ac;
+      background: white;
+      color: #176b46;
+      font-weight: 800;
+      text-decoration: none;
+    }
+    .success-action:hover {
+      border-color: #45a779;
+    }
     .hp-field {
       position: absolute !important;
       left: -9999px !important;
@@ -349,6 +380,10 @@
         <span class="status__dot"></span>
         <span id="apiStatusText">Подключаемся к API…</span>
       </div>
+      <br>
+      <a class="manage-last" id="manageLastBooking" href="cancel.html" hidden>
+        Управление последней записью
+      </a>
     </header>
 
     <section class="panel">
@@ -538,7 +573,8 @@
       formServiceId: document.getElementById('formServiceId'),
       formDate: document.getElementById('formDate'),
       formTime: document.getElementById('formTime'),
-      formRequestId: document.getElementById('formRequestId')
+      formRequestId: document.getElementById('formRequestId'),
+      manageLastBooking: document.getElementById('manageLastBooking')
     };
 
     function setApiStatus(type, text) {
@@ -604,6 +640,61 @@
         month: 'long',
         year: 'numeric'
       }).format(new Date(year, month - 1, day));
+    }
+
+    function buildCancelUrl(token) {
+      const url = new URL(
+        'cancel.html',
+        window.location.href
+      );
+
+      url.searchParams.set(
+        'token',
+        token
+      );
+
+      return url.toString();
+    }
+
+    function saveLastBookingManagement(data) {
+      if (!data?.cancelToken) return '';
+
+      const cancelUrl =
+        buildCancelUrl(
+          data.cancelToken
+        );
+
+      try {
+        localStorage.setItem(
+          'barberLastBookingCancelUrl',
+          cancelUrl
+        );
+      } catch (error) {
+        // localStorage может быть отключен — ссылка все равно будет показана на экране успеха.
+      }
+
+      updateLastBookingManagementLink();
+
+      return cancelUrl;
+    }
+
+    function updateLastBookingManagementLink() {
+      let url = '';
+
+      try {
+        url =
+          localStorage.getItem(
+            'barberLastBookingCancelUrl'
+          ) || '';
+      } catch (error) {}
+
+      if (!url) {
+        els.manageLastBooking.hidden = true;
+        return;
+      }
+
+      els.manageLastBooking.href = url;
+      els.manageLastBooking.hidden = false;
     }
 
     function dateInTimezone(timeZone) {
@@ -996,6 +1087,11 @@
 
       lockBookingInterfaceAfterSuccess();
 
+      const cancelUrl =
+        saveLastBookingManagement(
+          data
+        );
+
       els.bookingForm.hidden = true;
       els.bookingSuccess.hidden = false;
 
@@ -1022,6 +1118,25 @@
             Номер записи:
             ${escapeHtml(data.bookingId)}
           </p>
+
+          ${
+            cancelUrl
+              ? `
+                <div class="success-actions">
+                  <a
+                    class="success-action"
+                    href="${escapeHtml(cancelUrl)}"
+                  >
+                    Управление записью / отменить
+                  </a>
+                </div>
+                <p>
+                  Сохраните эту ссылку. На этом устройстве она также
+                  останется доступна как «Управление последней записью».
+                </p>
+              `
+              : ''
+          }
 
           <p>
             Запись завершена. Чтобы оформить еще одну запись,
@@ -1101,6 +1216,8 @@
     }
 
     async function init() {
+      updateLastBookingManagementLink();
+
       try {
         const data = await jsonp({ action: 'bootstrap' });
 
