@@ -435,6 +435,7 @@
           <input type="hidden" name="serviceId" id="formServiceId">
           <input type="hidden" name="date" id="formDate">
           <input type="hidden" name="time" id="formTime">
+          <input type="hidden" name="requestId" id="formRequestId">
 
           <div class="hp-field" aria-hidden="true">
             <label>
@@ -527,7 +528,8 @@
       formEmployeeId: document.getElementById('formEmployeeId'),
       formServiceId: document.getElementById('formServiceId'),
       formDate: document.getElementById('formDate'),
-      formTime: document.getElementById('formTime')
+      formTime: document.getElementById('formTime'),
+      formRequestId: document.getElementById('formRequestId')
     };
 
     function setApiStatus(type, text) {
@@ -827,84 +829,194 @@
         isLoading ? 'Создаем запись…' : 'Записаться';
     }
 
-    function setupBookingForm() {
-      els.bookingForm.action = API_URL;
+    function createRequestId() {
+      if (window.crypto && crypto.getRandomValues) {
+        const bytes = new Uint8Array(12);
+        crypto.getRandomValues(bytes);
 
-      let bookingResponseTimer = null;
+        return [...bytes]
+          .map(value =>
+            value
+              .toString(16)
+              .padStart(2, '0')
+          )
+          .join('');
+      }
 
-      els.bookingForm.addEventListener('submit', event => {
-        if (!state.service || !state.employee || !state.date || !state.time) {
-          event.preventDefault();
-          els.bookingMessage.innerHTML =
-            '<div class="error">Сначала выберите услугу, мастера, дату и время.</div>';
-          return;
+      return (
+        Date.now().toString(16) +
+        Math.random()
+          .toString(16)
+          .slice(2)
+      )
+        .replace(/[^a-f0-9]/gi, '')
+        .padEnd(16, '0')
+        .slice(0, 24)
+        .toLowerCase();
+    }
+
+    function delay(ms) {
+      return new Promise(
+        resolve =>
+          setTimeout(resolve, ms)
+      );
+    }
+
+    async function waitForBookingResult(
+      requestId,
+      timeoutMs = 20000
+    ) {
+
+      const startedAt =
+        Date.now();
+
+      while (
+        Date.now() - startedAt <
+        timeoutMs
+      ) {
+
+        const status =
+          await jsonp({
+            action: 'bookingStatus',
+            requestId
+          });
+
+        if (
+          status.status === 'done'
+        ) {
+          return status.result;
         }
 
-        if (!els.bookingForm.reportValidity()) {
-          event.preventDefault();
-          return;
-        }
+        await delay(800);
+      }
 
-        setBookingLoading(true);
+      throw new Error(
+        'Сервер не подтвердил запись вовремя'
+      );
+    }
+
+    function handleBookingResult(data) {
+
+      setBookingLoading(false);
+
+      if (!data || !data.ok) {
+
         els.bookingMessage.innerHTML =
-          '<div class="loading">Проверяем время и создаем запись…</div>';
+          `<div class="error">${
+            escapeHtml(
+              data?.error ||
+              'Не удалось создать запись.'
+            )
+          }</div>`;
 
-        clearTimeout(bookingResponseTimer);
-
-        bookingResponseTimer = setTimeout(() => {
-          setBookingLoading(false);
-          els.bookingMessage.innerHTML =
-            '<div class="error">Сервер не прислал подтверждение вовремя. Обновите страницу и проверьте выбранное время. Если слот исчез, запись могла уже сохраниться.</div>';
-        }, 20000);
-      });
-
-      window.addEventListener('message', event => {
-        const allowedOrigin =
-          event.origin === 'https://script.google.com' ||
-          event.origin.endsWith('.googleusercontent.com');
-
-        if (!allowedOrigin) return;
-
-        const data = event.data;
-
-        if (!data || data.type !== 'barber-booking-result') {
-          return;
+        if (
+          data?.code ===
+          'SLOT_UNAVAILABLE'
+        ) {
+          state.time = '';
+          loadSlots();
         }
 
-        clearTimeout(bookingResponseTimer);
-        setBookingLoading(false);
+        return;
+      }
 
-        if (!data.ok) {
-          els.bookingMessage.innerHTML =
-            `<div class="error">${escapeHtml(data.error || 'Не удалось создать запись.')}</div>`;
+      els.bookingForm.hidden = true;
+      els.bookingSuccess.hidden = false;
 
-          if (data.code === 'SLOT_UNAVAILABLE') {
-            state.time = '';
-            loadSlots();
+      els.bookingSuccess.innerHTML = `
+        <div class="success-box">
+          <h3>✓ Вы записаны</h3>
+
+          <p>
+            <strong>${escapeHtml(data.serviceName)}</strong><br>
+            ${escapeHtml(formatDateRu(data.date))}
+            в
+            ${escapeHtml(data.time)}
+          </p>
+
+          <p>
+            Мастер:
+            <strong>${escapeHtml(data.employeeName)}</strong><br>
+
+            Стоимость:
+            <strong>${escapeHtml(formatPrice(data.price))}</strong>
+          </p>
+
+          <p class="success-id">
+            Номер записи:
+            ${escapeHtml(data.bookingId)}
+          </p>
+        </div>
+      `;
+    }
+
+    function setupBookingForm() {
+
+      els.bookingForm.action =
+        API_URL;
+
+      els.bookingForm
+        .addEventListener(
+          'submit',
+          event => {
+
+            if (
+              !state.service ||
+              !state.employee ||
+              !state.date ||
+              !state.time
+            ) {
+              event.preventDefault();
+
+              els.bookingMessage.innerHTML =
+                '<div class="error">Сначала выберите услугу, мастера, дату и время.</div>';
+
+              return;
+            }
+
+            if (
+              !els.bookingForm
+                .reportValidity()
+            ) {
+              event.preventDefault();
+              return;
+            }
+
+            const requestId =
+              createRequestId();
+
+            els.formRequestId.value =
+              requestId;
+
+            setBookingLoading(true);
+
+            els.bookingMessage.innerHTML =
+              '<div class="loading">Проверяем время и создаем запись…</div>';
+
+            waitForBookingResult(
+              requestId
+            )
+              .then(
+                handleBookingResult
+              )
+              .catch(async error => {
+
+                setBookingLoading(false);
+
+                els.bookingMessage.innerHTML =
+                  `<div class="error">${
+                    escapeHtml(
+                      error.message +
+                      '. Обновляем свободное время…'
+                    )
+                  }</div>`;
+
+                state.time = '';
+
+                await loadSlots();
+              });
           }
-
-          return;
-        }
-
-        els.bookingForm.hidden = true;
-        els.bookingSuccess.hidden = false;
-        els.bookingSuccess.innerHTML = `
-          <div class="success-box">
-            <h3>✓ Вы записаны</h3>
-            <p>
-              <strong>${escapeHtml(data.serviceName)}</strong><br>
-              ${escapeHtml(formatDateRu(data.date))} в ${escapeHtml(data.time)}
-            </p>
-            <p>
-              Мастер: <strong>${escapeHtml(data.employeeName)}</strong><br>
-              Стоимость: <strong>${escapeHtml(formatPrice(data.price))}</strong>
-            </p>
-            <p class="success-id">
-              Номер записи: ${escapeHtml(data.bookingId)}
-            </p>
-          </div>
-        `;
-      });
+        );
     }
 
     async function init() {
