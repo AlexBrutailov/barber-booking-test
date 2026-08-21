@@ -252,12 +252,82 @@
       font-size: 13px;
       line-height: 1.5;
     }
+
+    .booking-form {
+      margin-top: 18px;
+      padding-top: 18px;
+      border-top: 1px solid var(--border);
+    }
+    .booking-form__title {
+      margin: 0 0 14px;
+      font-size: 18px;
+      letter-spacing: -.02em;
+    }
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .field label {
+      display: block;
+      margin-bottom: 7px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .field input {
+      width: 100%;
+      min-height: 50px;
+      padding: 0 14px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: white;
+      color: var(--text);
+      outline: none;
+    }
+    .field input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(17, 24, 39, .08);
+    }
+    .booking-message {
+      margin-top: 12px;
+    }
+    .success-box {
+      padding: 22px;
+      border-radius: 18px;
+      background: #ecfdf3;
+      border: 1px solid #abefc6;
+    }
+    .success-box h3 {
+      margin: 0 0 8px;
+      font-size: 22px;
+    }
+    .success-box p {
+      margin: 6px 0;
+      color: #335b47;
+      line-height: 1.5;
+    }
+    .success-id {
+      margin-top: 12px !important;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px;
+      word-break: break-all;
+    }
+    .hp-field {
+      position: absolute !important;
+      left: -9999px !important;
+      width: 1px !important;
+      height: 1px !important;
+      overflow: hidden !important;
+    }
     @media (max-width: 680px) {
       .page { margin-top: 22px; }
       .step { padding: 20px 16px; }
       .cards { grid-template-columns: 1fr; }
       .slots { grid-template-columns: repeat(3, minmax(0, 1fr)); }
       .summary { grid-template-columns: 1fr; }
+      .field-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -351,10 +421,74 @@
           </div>
         </div>
 
-        <button class="next" type="button" disabled>Создание записи подключим следующим шагом</button>
-        <p class="dev-note">Сейчас кнопка намеренно отключена: этот MVP пока только читает данные и проверяет свободные слоты.</p>
+        <form
+          class="booking-form"
+          id="bookingForm"
+          method="post"
+          target="bookingTarget"
+          autocomplete="on"
+        >
+          <h3 class="booking-form__title">Ваши данные</h3>
+
+          <input type="hidden" name="action" value="createBooking">
+          <input type="hidden" name="employeeId" id="formEmployeeId">
+          <input type="hidden" name="serviceId" id="formServiceId">
+          <input type="hidden" name="date" id="formDate">
+          <input type="hidden" name="time" id="formTime">
+
+          <div class="hp-field" aria-hidden="true">
+            <label>
+              Сайт
+              <input type="text" name="website" tabindex="-1" autocomplete="off">
+            </label>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="clientName">Ваше имя</label>
+              <input
+                id="clientName"
+                name="clientName"
+                type="text"
+                minlength="2"
+                maxlength="80"
+                placeholder="Александр"
+                autocomplete="name"
+                required
+              >
+            </div>
+
+            <div class="field">
+              <label for="clientPhone">Телефон</label>
+              <input
+                id="clientPhone"
+                name="clientPhone"
+                type="tel"
+                maxlength="30"
+                placeholder="+7 999 123-45-67"
+                autocomplete="tel"
+                required
+              >
+            </div>
+          </div>
+
+          <button class="next" id="bookingSubmit" type="submit">
+            Записаться
+          </button>
+
+          <div class="booking-message" id="bookingMessage"></div>
+        </form>
+
+        <div id="bookingSuccess" hidden></div>
       </div>
     </section>
+
+    <iframe
+      id="bookingTarget"
+      name="bookingTarget"
+      title="Служебный ответ записи"
+      hidden
+    ></iframe>
   </main>
 
   <script>
@@ -385,7 +519,15 @@
       summaryService: document.getElementById('summaryService'),
       summaryEmployee: document.getElementById('summaryEmployee'),
       summaryDate: document.getElementById('summaryDate'),
-      summaryTime: document.getElementById('summaryTime')
+      summaryTime: document.getElementById('summaryTime'),
+      bookingForm: document.getElementById('bookingForm'),
+      bookingSubmit: document.getElementById('bookingSubmit'),
+      bookingMessage: document.getElementById('bookingMessage'),
+      bookingSuccess: document.getElementById('bookingSuccess'),
+      formEmployeeId: document.getElementById('formEmployeeId'),
+      formServiceId: document.getElementById('formServiceId'),
+      formDate: document.getElementById('formDate'),
+      formTime: document.getElementById('formTime')
     };
 
     function setApiStatus(type, text) {
@@ -663,10 +805,94 @@
       els.summaryDate.textContent = formatDateRu(state.date);
       els.summaryTime.textContent = state.time;
 
+      els.formEmployeeId.value = state.employee.id;
+      els.formServiceId.value = state.service.id;
+      els.formDate.value = state.date;
+      els.formTime.value = state.time;
+
+      els.bookingForm.hidden = false;
+      els.bookingSuccess.hidden = true;
+      els.bookingMessage.innerHTML = '';
+
       els.summaryStep.hidden = false;
       els.summaryStep.scrollIntoView({
         behavior: 'smooth',
         block: 'nearest'
+      });
+    }
+
+    function setBookingLoading(isLoading) {
+      els.bookingSubmit.disabled = isLoading;
+      els.bookingSubmit.textContent =
+        isLoading ? 'Создаем запись…' : 'Записаться';
+    }
+
+    function setupBookingForm() {
+      els.bookingForm.action = API_URL;
+
+      els.bookingForm.addEventListener('submit', event => {
+        if (!state.service || !state.employee || !state.date || !state.time) {
+          event.preventDefault();
+          els.bookingMessage.innerHTML =
+            '<div class="error">Сначала выберите услугу, мастера, дату и время.</div>';
+          return;
+        }
+
+        if (!els.bookingForm.reportValidity()) {
+          event.preventDefault();
+          return;
+        }
+
+        setBookingLoading(true);
+        els.bookingMessage.innerHTML =
+          '<div class="loading">Проверяем время и создаем запись…</div>';
+      });
+
+      window.addEventListener('message', event => {
+        const allowedOrigin =
+          event.origin === 'https://script.google.com' ||
+          event.origin.endsWith('.googleusercontent.com');
+
+        if (!allowedOrigin) return;
+
+        const data = event.data;
+
+        if (!data || data.type !== 'barber-booking-result') {
+          return;
+        }
+
+        setBookingLoading(false);
+
+        if (!data.ok) {
+          els.bookingMessage.innerHTML =
+            `<div class="error">${escapeHtml(data.error || 'Не удалось создать запись.')}</div>`;
+
+          if (data.code === 'SLOT_UNAVAILABLE') {
+            state.time = '';
+            loadSlots();
+          }
+
+          return;
+        }
+
+        els.bookingForm.hidden = true;
+        els.bookingSuccess.hidden = false;
+        els.bookingSuccess.innerHTML = `
+          <div class="success-box">
+            <h3>✓ Вы записаны</h3>
+            <p>
+              <strong>${escapeHtml(data.serviceName)}</strong><br>
+              ${escapeHtml(formatDateRu(data.date))} в ${escapeHtml(data.time)}
+            </p>
+            <p>
+              Мастер: <strong>${escapeHtml(data.employeeName)}</strong><br>
+              Стоимость: <strong>${escapeHtml(formatPrice(data.price))}</strong>
+            </p>
+            <p class="success-id">
+              Номер записи: ${escapeHtml(data.bookingId)}
+            </p>
+          </div>
+        `;
       });
     }
 
@@ -681,6 +907,7 @@
         renderServices();
         renderEmployees();
         setupDateInput();
+        setupBookingForm();
 
         setApiStatus('ok', 'API подключен · данные загружены');
       } catch (error) {
