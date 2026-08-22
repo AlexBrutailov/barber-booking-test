@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Три дизайна · Онлайн-запись к мастеру</title>
+  <title>Четыре дизайна · Онлайн-запись к мастеру</title>
   <meta name="description" content="Выберите услугу, мастера и удобное время для визита.">
   <style>
     :root {
@@ -923,7 +923,7 @@
     }
 
     /* =========================================================
-       ТРИ САМОСТОЯТЕЛЬНЫХ ДИЗАЙНА + ПЕРЕКЛЮЧАТЕЛЬ
+       ЧЕТЫРЕ САМОСТОЯТЕЛЬНЫХ ДИЗАЙНА + ПЕРЕКЛЮЧАТЕЛЬ
        ========================================================= */
     html { background: #080808; }
     body {
@@ -934,14 +934,11 @@
       width: 100%;
       margin: 0;
     }
-    .topbar,
-    .bento,
-    .process,
-    .place { display: none !important; }
     .design-view { display: none; min-height: 100vh; }
     html[data-design="1"] .design-view[data-design-view="1"],
     html[data-design="2"] .design-view[data-design-view="2"],
-    html[data-design="3"] .design-view[data-design-view="3"] { display: block; }
+    html[data-design="3"] .design-view[data-design-view="3"],
+    html[data-design="4"] .design-view[data-design-view="4"] { display: block; }
 
     .design-switcher {
       position: fixed;
@@ -1001,27 +998,84 @@
       font-size: 11px;
       white-space: nowrap;
     }
-    html[data-design="2"] .design-switcher {
+    html[data-design="1"] .design-switcher {
+      border-color: rgba(41,79,67,.2);
+      color: #202522;
+      background: rgba(255,255,255,.9);
+      box-shadow: 0 12px 36px rgba(53,48,39,.12);
+    }
+    html[data-design="1"] .design-switcher__buttons button { border-color: #cfd7d2; }
+    html[data-design="1"] .design-switcher__buttons button[aria-pressed="true"] {
+      border-color: #294f43;
+      color: white;
+      background: #294f43;
+    }
+    html[data-design="3"] .design-switcher {
       border: 2px solid #111;
       border-radius: 0;
       color: #111;
       background: rgba(247,246,241,.95);
       box-shadow: 4px 4px 0 #111;
     }
-    html[data-design="2"] .design-switcher__buttons button { border-color: #111; border-radius: 0; }
-    html[data-design="2"] .design-switcher__buttons button[aria-pressed="true"] { color: white; border-color: #e13a2d; background: #e13a2d; }
-    html[data-design="3"] .design-switcher {
+    html[data-design="3"] .design-switcher__buttons button { border-color: #111; border-radius: 0; }
+    html[data-design="3"] .design-switcher__buttons button[aria-pressed="true"] { color: white; border-color: #e13a2d; background: #e13a2d; }
+    html[data-design="4"] .design-switcher {
       border: 3px solid #111;
       border-radius: 12px;
       color: #111;
       background: #f8f0d7;
       box-shadow: 5px 5px 0 #111;
     }
-    html[data-design="3"] .design-switcher__buttons button { border: 2px solid #111; border-radius: 7px; }
-    html[data-design="3"] .design-switcher__buttons button[aria-pressed="true"] { color: #111; border-color: #111; background: #cfff38; }
+    html[data-design="4"] .design-switcher__buttons button { border: 2px solid #111; border-radius: 7px; }
+    html[data-design="4"] .design-switcher__buttons button[aria-pressed="true"] { color: #111; border-color: #111; background: #cfff38; }
 
-    /* 01 — LUXURY NOIR GOLD */
+    /* 01 — ORIGINAL BENTO */
     html[data-design="1"] body {
+      --bg: #f4f1ec;
+      --card: #ffffff;
+      --text: #202522;
+      --muted: #70766f;
+      --border: #dedfd9;
+      --accent: #294f43;
+      --accent-hover: #1f4137;
+      --accent-soft: #eef4f1;
+      --pink: #d92f87;
+      color: #202522;
+      background:
+        radial-gradient(circle at 90% 0%, rgba(217,47,135,.055), transparent 24rem),
+        #f4f1ec;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    .original {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 78px 0 72px;
+    }
+    .original__phone {
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 0 14px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      color: var(--accent);
+      background: rgba(255,255,255,.72);
+      font-size: 12px;
+      font-weight: 850;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .original__phone:hover { border-color: var(--accent); background: white; }
+    .original__status {
+      margin-top: 0;
+      border-color: rgba(255,255,255,.18);
+      color: rgba(255,255,255,.75);
+      background: rgba(255,255,255,.08);
+    }
+    .original__status .status__dot { background: #bde98d; }
+
+    /* 02 — LUXURY NOIR GOLD */
+    html[data-design="2"] body {
       --bg: #080808;
       --card: #11110f;
       --text: #f4efe4;
@@ -1167,8 +1221,8 @@
     @keyframes luxuryZoom { from { transform: scale(1.01); } to { transform: scale(1.08); } }
     @keyframes luxuryGlint { 0% { left: -10%; } 45%,100% { left: 110%; } }
 
-    /* 02 — STRICT SWISS GRID */
-    html[data-design="2"] body {
+    /* 03 — STRICT SWISS GRID */
+    html[data-design="3"] body {
       --bg: #f4f3ee;
       --card: #ffffff;
       --text: #111111;
@@ -1252,8 +1306,8 @@
     .strict__steps b { color: #e13a2d; font-size: 32px; }
     .strict__steps span { font-size: 11px; font-weight: 900; }
 
-    /* 03 — RETRO FUTURE POP */
-    html[data-design="3"] body {
+    /* 04 — RETRO FUTURE POP */
+    html[data-design="4"] body {
       --bg: #5d55ff;
       --card: #fff8df;
       --text: #111111;
@@ -1323,7 +1377,7 @@
     .pop__bottom span { padding: 18px; border-right: 3px solid #111; font-size: 12px; font-weight: 950; text-align: center; }
     .pop__bottom span:last-child { border-right: 0; }
 
-    /* Общая форма: три разных представления */
+    /* Общая форма: четыре разных представления */
     #drawerStatusSlot .status { margin-top: 6px; padding: 5px 9px; font-size: 10px; }
     .drawer__phone {
       display: inline-block;
@@ -1334,53 +1388,53 @@
       text-decoration: none;
     }
     .drawer__phone:hover { text-decoration: underline; }
-    html[data-design="1"] .booking-backdrop { background: rgba(0,0,0,.76); backdrop-filter: blur(8px); }
-    html[data-design="1"] .booking-drawer {
+    html[data-design="2"] .booking-backdrop { background: rgba(0,0,0,.76); backdrop-filter: blur(8px); }
+    html[data-design="2"] .booking-drawer {
       width: min(590px, 100%);
       border-left: 1px solid #4a402d;
       color: #f3ede1;
       background: radial-gradient(circle at 100% 0%, rgba(201,164,94,.14), transparent 24rem), #0e0e0d;
       box-shadow: -28px 0 80px rgba(0,0,0,.48);
     }
-    html[data-design="1"] .drawer__head { border-color: #3b3325; background: rgba(14,14,13,.92); }
-    html[data-design="1"] .drawer__kicker { color: #c9a45e; }
-    html[data-design="1"] .drawer__close { border-color: #4a402d; color: #e6ca92; background: transparent; }
-    html[data-design="1"] .booking-drawer .choice,
-    html[data-design="1"] .booking-drawer .date-input,
-    html[data-design="1"] .booking-drawer .slot,
-    html[data-design="1"] .booking-drawer .field input { border-color: #3d372c; color: #f3ede1; background: #161512; }
-    html[data-design="1"] .booking-drawer .choice.is-active,
-    html[data-design="1"] .booking-drawer .slot.is-active { border-color: #c9a45e; background: #2b2418; }
-    html[data-design="1"] .booking-drawer .step { border-color: #302b23; }
-    html[data-design="1"] .booking-drawer .step__number,
-    html[data-design="1"] .booking-drawer .next { color: #090909; background: #c9a45e; }
-    html[data-design="1"] .booking-drawer .summary__item,
-    html[data-design="1"] .booking-drawer .loading,
-    html[data-design="1"] .booking-drawer .empty { color: #c1b9ac; background: #1b1915; }
-
-    html[data-design="2"] .booking-backdrop { background: rgba(17,17,17,.5); backdrop-filter: none; }
-    html[data-design="2"] .booking-drawer { width: min(620px, 100%); border-left: 4px solid #111; color: #111; background: #f4f3ee; box-shadow: -12px 0 0 #e13a2d; }
-    html[data-design="2"] .drawer__head { border-bottom: 3px solid #111; background: #f4f3ee; }
-    html[data-design="2"] .drawer__kicker { color: #e13a2d; }
-    html[data-design="2"] .drawer__close,
+    html[data-design="2"] .drawer__head { border-color: #3b3325; background: rgba(14,14,13,.92); }
+    html[data-design="2"] .drawer__kicker { color: #c9a45e; }
+    html[data-design="2"] .drawer__close { border-color: #4a402d; color: #e6ca92; background: transparent; }
     html[data-design="2"] .booking-drawer .choice,
     html[data-design="2"] .booking-drawer .date-input,
     html[data-design="2"] .booking-drawer .slot,
-    html[data-design="2"] .booking-drawer .field input,
-    html[data-design="2"] .booking-drawer .summary__item,
-    html[data-design="2"] .booking-drawer .next,
-    html[data-design="2"] .booking-drawer .step__number { border-radius: 0; }
-    html[data-design="2"] .booking-drawer .choice,
-    html[data-design="2"] .booking-drawer .date-input,
-    html[data-design="2"] .booking-drawer .slot,
-    html[data-design="2"] .booking-drawer .field input { border-color: #111; background: white; }
+    html[data-design="2"] .booking-drawer .field input { border-color: #3d372c; color: #f3ede1; background: #161512; }
     html[data-design="2"] .booking-drawer .choice.is-active,
-    html[data-design="2"] .booking-drawer .slot.is-active,
+    html[data-design="2"] .booking-drawer .slot.is-active { border-color: #c9a45e; background: #2b2418; }
+    html[data-design="2"] .booking-drawer .step { border-color: #302b23; }
     html[data-design="2"] .booking-drawer .step__number,
-    html[data-design="2"] .booking-drawer .next { color: white; background: #e13a2d; }
+    html[data-design="2"] .booking-drawer .next { color: #090909; background: #c9a45e; }
+    html[data-design="2"] .booking-drawer .summary__item,
+    html[data-design="2"] .booking-drawer .loading,
+    html[data-design="2"] .booking-drawer .empty { color: #c1b9ac; background: #1b1915; }
 
-    html[data-design="3"] .booking-backdrop { background: rgba(17,17,17,.68); backdrop-filter: none; }
-    html[data-design="3"] .booking-drawer {
+    html[data-design="3"] .booking-backdrop { background: rgba(17,17,17,.5); backdrop-filter: none; }
+    html[data-design="3"] .booking-drawer { width: min(620px, 100%); border-left: 4px solid #111; color: #111; background: #f4f3ee; box-shadow: -12px 0 0 #e13a2d; }
+    html[data-design="3"] .drawer__head { border-bottom: 3px solid #111; background: #f4f3ee; }
+    html[data-design="3"] .drawer__kicker { color: #e13a2d; }
+    html[data-design="3"] .drawer__close,
+    html[data-design="3"] .booking-drawer .choice,
+    html[data-design="3"] .booking-drawer .date-input,
+    html[data-design="3"] .booking-drawer .slot,
+    html[data-design="3"] .booking-drawer .field input,
+    html[data-design="3"] .booking-drawer .summary__item,
+    html[data-design="3"] .booking-drawer .next,
+    html[data-design="3"] .booking-drawer .step__number { border-radius: 0; }
+    html[data-design="3"] .booking-drawer .choice,
+    html[data-design="3"] .booking-drawer .date-input,
+    html[data-design="3"] .booking-drawer .slot,
+    html[data-design="3"] .booking-drawer .field input { border-color: #111; background: white; }
+    html[data-design="3"] .booking-drawer .choice.is-active,
+    html[data-design="3"] .booking-drawer .slot.is-active,
+    html[data-design="3"] .booking-drawer .step__number,
+    html[data-design="3"] .booking-drawer .next { color: white; background: #e13a2d; }
+
+    html[data-design="4"] .booking-backdrop { background: rgba(17,17,17,.68); backdrop-filter: none; }
+    html[data-design="4"] .booking-drawer {
       top: auto;
       right: 20px;
       bottom: 0;
@@ -1394,20 +1448,20 @@
       box-shadow: 0 -10px 0 #cfff38;
       transform: translateY(110%);
     }
-    html[data-design="3"] .booking-overlay.is-open .booking-drawer { transform: translateY(0); }
-    html[data-design="3"] .drawer__head { border-bottom: 4px solid #111; background: #ff4f9a; }
-    html[data-design="3"] .drawer__close,
-    html[data-design="3"] .booking-drawer .choice,
-    html[data-design="3"] .booking-drawer .date-input,
-    html[data-design="3"] .booking-drawer .slot,
-    html[data-design="3"] .booking-drawer .field input,
-    html[data-design="3"] .booking-drawer .summary__item,
-    html[data-design="3"] .booking-drawer .next,
-    html[data-design="3"] .booking-drawer .step__number { border: 3px solid #111; border-radius: 0; box-shadow: 3px 3px 0 #111; }
-    html[data-design="3"] .booking-drawer .choice.is-active,
-    html[data-design="3"] .booking-drawer .slot.is-active,
-    html[data-design="3"] .booking-drawer .step__number,
-    html[data-design="3"] .booking-drawer .next { color: #111; background: #cfff38; }
+    html[data-design="4"] .booking-overlay.is-open .booking-drawer { transform: translateY(0); }
+    html[data-design="4"] .drawer__head { border-bottom: 4px solid #111; background: #ff4f9a; }
+    html[data-design="4"] .drawer__close,
+    html[data-design="4"] .booking-drawer .choice,
+    html[data-design="4"] .booking-drawer .date-input,
+    html[data-design="4"] .booking-drawer .slot,
+    html[data-design="4"] .booking-drawer .field input,
+    html[data-design="4"] .booking-drawer .summary__item,
+    html[data-design="4"] .booking-drawer .next,
+    html[data-design="4"] .booking-drawer .step__number { border: 3px solid #111; border-radius: 0; box-shadow: 3px 3px 0 #111; }
+    html[data-design="4"] .booking-drawer .choice.is-active,
+    html[data-design="4"] .booking-drawer .slot.is-active,
+    html[data-design="4"] .booking-drawer .step__number,
+    html[data-design="4"] .booking-drawer .next { color: #111; background: #cfff38; }
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
@@ -1434,6 +1488,10 @@
       .design-switcher__label { display: none; }
       .design-switcher__name { min-width: 72px; }
       .design-switcher .manage-last { font-size: 10px; }
+      .original { width: min(100% - 20px, 1180px); padding: 8px 0 88px; }
+      .original .topbar { flex-wrap: wrap; }
+      .original .topbar__actions { gap: 7px; }
+      .original__phone { min-height: 36px; padding: 0 11px; font-size: 11px; }
       .luxury { padding: 18px 12px 88px; }
       .luxury__header { grid-template-columns: 1fr auto; }
       .luxury__brand { grid-column: 1; grid-row: 1; }
@@ -1483,7 +1541,8 @@
       .pop__bottom span:nth-child(-n+2) { border-bottom: 3px solid #111; }
       html[data-design="1"] .booking-drawer,
       html[data-design="2"] .booking-drawer,
-      html[data-design="3"] .booking-drawer { inset: 0; width: 100%; height: 100dvh; border: 0; box-shadow: none; }
+      html[data-design="3"] .booking-drawer,
+      html[data-design="4"] .booking-drawer { inset: 0; width: 100%; height: 100dvh; border: 0; box-shadow: none; }
     }
   </style>
 </head>
@@ -1495,15 +1554,110 @@
         <button type="button" data-design-option="1" aria-pressed="true">1</button>
         <button type="button" data-design-option="2" aria-pressed="false">2</button>
         <button type="button" data-design-option="3" aria-pressed="false">3</button>
+        <button type="button" data-design-option="4" aria-pressed="false">4</button>
       </div>
-      <span class="design-switcher__name" id="designName">Noir Gold</span>
+      <span class="design-switcher__name" id="designName">Original Bento</span>
       <span class="design-switcher__manage" id="manageMount">
         <a class="manage-last" id="manageLastBooking" href="cancel.html" hidden>Моя запись</a>
       </span>
     </nav>
 
     <div class="design-stage">
-      <section class="design-view luxury" data-design-view="1" aria-labelledby="luxuryTitle">
+      <section class="design-view original" data-design-view="1" aria-labelledby="originalTitle">
+        <header class="topbar">
+          <div class="brand">
+            <span class="brand__mark" aria-hidden="true"></span>
+            <span>Парикмахерская</span>
+          </div>
+          <div class="topbar__actions">
+            <a class="original__phone" href="tel:+79516487199" aria-label="Позвонить для записи по номеру плюс семь девятьсот пятьдесят один шестьсот сорок восемь семьдесят один девяносто девять">+7 (951) 648-71-99</a>
+            <button class="topbar__button js-open-booking" type="button">Записаться</button>
+          </div>
+        </header>
+
+        <div class="bento">
+          <div class="bento__gallery">
+            <figure class="bento__photo bento__photo--interior">
+              <img src="assets/interior.jpg" alt="Интерьер парикмахерской" width="1279" height="749">
+              <figcaption class="bento__caption">Спокойно · уютно · без ожидания</figcaption>
+            </figure>
+            <figure class="bento__photo bento__photo--storefront">
+              <img src="assets/storefront.jpg" alt="Фасад парикмахерской с розовой подсветкой" width="1275" height="961">
+              <figcaption class="bento__caption">Розовая подсветка окон</figcaption>
+            </figure>
+            <figure class="bento__photo bento__photo--entrance">
+              <img src="assets/entrance.jpg" alt="Вход в парикмахерскую с улицы" width="764" height="1019">
+              <figcaption class="bento__caption">Вход прямо с улицы</figcaption>
+            </figure>
+          </div>
+
+          <div class="bento__side">
+            <article class="bento__intro">
+              <div>
+                <p class="bento__kicker">Онлайн-запись к мастеру</p>
+                <h1 class="bento__title" id="originalTitle">Время для свежего образа</h1>
+                <p class="bento__copy">Выберите услугу, мастера и удобное время — без звонков и ожидания ответа.</p>
+              </div>
+              <div class="bento__actions">
+                <div class="status original__status">
+                  <span class="status__dot"></span>
+                  <span>Расписание обновляется онлайн</span>
+                </div>
+                <button class="booking-launch js-open-booking" type="button">
+                  <span>Выбрать время</span>
+                  <span class="booking-launch__arrow" aria-hidden="true">→</span>
+                </button>
+              </div>
+            </article>
+
+            <div class="bento__facts">
+              <div class="fact-card fact-card--accent">
+                <span class="fact-card__label">Режим работы</span>
+                <span class="fact-card__value">Ежедневно<br>9:00–21:00</span>
+              </div>
+              <div class="fact-card">
+                <span class="fact-card__label">Формат</span>
+                <span class="fact-card__value">Онлайн или по телефону</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="process" aria-labelledby="originalProcessTitle">
+          <div class="process__top">
+            <h2 class="process__title" id="originalProcessTitle">Запись без лишних шагов</h2>
+            <p class="process__copy">Расписание обновляется автоматически. Вы видите только доступные услуги, мастеров и свободное время.</p>
+          </div>
+          <div class="process__steps">
+            <div class="process__step"><span class="process__number">01</span><strong>Выберите услугу</strong></div>
+            <div class="process__step"><span class="process__number">02</span><strong>Определитесь с мастером</strong></div>
+            <div class="process__step"><span class="process__number">03</span><strong>Найдите удобное окно</strong></div>
+            <div class="process__step"><span class="process__number">04</span><strong>Оставьте контакты</strong></div>
+          </div>
+        </div>
+
+        <div class="place" aria-labelledby="originalPlaceTitle">
+          <div class="place__head">
+            <div>
+              <p class="place__kicker">Легко узнать</p>
+              <h2 id="originalPlaceTitle">То самое место с розовой подсветкой</h2>
+            </div>
+            <p class="place__text">Вход расположен прямо с улицы. Главный ориентир — большие окна с яркой розовой подсветкой.</p>
+          </div>
+          <div class="place__photos">
+            <figure class="place__photo place__photo--wide">
+              <img src="assets/storefront.jpg" alt="Фасад парикмахерской с розовой подсветкой окон" width="1275" height="961" loading="lazy">
+              <figcaption>Ориентир — розовая подсветка</figcaption>
+            </figure>
+            <figure class="place__photo place__photo--door">
+              <img src="assets/entrance.jpg" alt="Вход в парикмахерскую с улицы" width="764" height="1019" loading="lazy">
+              <figcaption>Вход с улицы</figcaption>
+            </figure>
+          </div>
+        </div>
+      </section>
+
+      <section class="design-view luxury" data-design-view="2" aria-labelledby="luxuryTitle">
         <header class="luxury__header">
           <div class="luxury__brand">
             <span class="luxury__brand-mark">P</span>
@@ -1542,7 +1696,7 @@
         <div class="luxury__glint" aria-hidden="true"></div>
       </section>
 
-      <section class="design-view strict" data-design-view="2" aria-labelledby="strictTitle">
+      <section class="design-view strict" data-design-view="3" aria-labelledby="strictTitle">
         <header class="strict__header">
           <strong>ПАРИКМАХЕРСКАЯ®</strong>
           <span>СИСТЕМА ОНЛАЙН-ЗАПИСИ / 2026</span>
@@ -1551,7 +1705,7 @@
         </header>
 
         <div class="strict__hero">
-          <div class="strict__index" aria-hidden="true">02</div>
+          <div class="strict__index" aria-hidden="true">03</div>
           <article class="strict__copy">
             <p>ТОЧНОЕ ВРЕМЯ / ТОЧНЫЙ РЕЗУЛЬТАТ</p>
             <h1 id="strictTitle">Стрижка<br>по плану.</h1>
@@ -1580,13 +1734,13 @@
         </div>
       </section>
 
-      <section class="design-view pop" data-design-view="3" aria-labelledby="popTitle">
+      <section class="design-view pop" data-design-view="4" aria-labelledby="popTitle">
         <div class="pop__ticker" aria-hidden="true">
           <div>СТРИЖКА ✦ БОРОДА ✦ НОВЫЙ ОБРАЗ ✦ БЕЗ ЗВОНКОВ ✦ СТРИЖКА ✦ БОРОДА ✦ НОВЫЙ ОБРАЗ ✦ БЕЗ ЗВОНКОВ ✦</div>
         </div>
 
         <header class="pop__header">
-          <div class="pop__logo">CUT!<span>03</span></div>
+          <div class="pop__logo">CUT!<span>04</span></div>
           <p>Твоя запись.<br>Твои правила.</p>
           <a class="pop__phone" href="tel:+79516487199" aria-label="Позвонить для записи по номеру плюс семь девятьсот пятьдесят один шестьсот сорок восемь семьдесят один девяносто девять">+7 (951) 648-71-99</a>
           <button class="pop__mini-button js-open-booking" type="button">BOOK NOW</button>
@@ -1839,13 +1993,14 @@
 
     let bookingTrigger = null;
     const DESIGN_NAMES = {
-      1: 'Noir Gold',
-      2: 'Swiss Grid',
-      3: 'Retro Pop'
+      1: 'Original Bento',
+      2: 'Noir Gold',
+      3: 'Swiss Grid',
+      4: 'Retro Pop'
     };
 
     function setDesign(design, options = {}) {
-      const value = ['1', '2', '3'].includes(String(design)) ? String(design) : '1';
+      const value = ['1', '2', '3', '4'].includes(String(design)) ? String(design) : '1';
       const shouldPersist = options.persist !== false;
 
       document.documentElement.dataset.design = value;
