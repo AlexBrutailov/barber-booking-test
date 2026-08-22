@@ -512,29 +512,506 @@
       .place__photo { min-height: 220px; }
       .place__photo--door { min-height: 340px; }
     }
+
+    /* Экспериментальная bento-версия */
+    body.drawer-open { overflow: hidden; }
+    .page {
+      width: min(1180px, calc(100% - 32px));
+      margin: 18px auto 72px;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      min-height: 58px;
+      margin-bottom: 12px;
+      padding: 0 4px;
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .brand__mark {
+      width: 26px;
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--pink), #c4e790);
+      box-shadow: 0 0 18px rgba(217, 47, 135, .3);
+    }
+    .topbar__actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .topbar .manage-last { margin: 0; }
+    .topbar__button,
+    .booking-launch {
+      border: 0;
+      color: white;
+      background: var(--text);
+      font-weight: 850;
+    }
+    .topbar__button {
+      min-height: 42px;
+      padding: 0 18px;
+      border-radius: 999px;
+    }
+    .topbar__button:hover { background: var(--accent); }
+
+    .bento {
+      display: grid;
+      grid-template-columns: minmax(0, 1.18fr) minmax(360px, .82fr);
+      gap: 12px;
+    }
+    .bento__gallery {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(180px, .8fr);
+      grid-template-rows: 360px 190px;
+      gap: 12px;
+    }
+    .bento__photo {
+      position: relative;
+      min-width: 0;
+      margin: 0;
+      overflow: hidden;
+      border-radius: 26px;
+      background: #d9ddd8;
+      box-shadow: var(--shadow);
+    }
+    .bento__photo--interior { grid-column: 1 / -1; }
+    .bento__photo img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+    }
+    .bento__photo--interior img { object-position: center; }
+    .bento__photo--storefront img { object-position: center 52%; }
+    .bento__photo--entrance img { object-position: center 43%; }
+    .bento__caption {
+      position: absolute;
+      left: 14px;
+      bottom: 14px;
+      padding: 9px 12px;
+      border: 1px solid rgba(255,255,255,.24);
+      border-radius: 999px;
+      background: rgba(22, 31, 27, .72);
+      color: white;
+      font-size: 12px;
+      font-weight: 800;
+      backdrop-filter: blur(10px);
+    }
+    .bento__side {
+      display: grid;
+      grid-template-rows: minmax(360px, 1fr) auto;
+      gap: 12px;
+    }
+    .bento__intro {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 430px;
+      padding: clamp(28px, 4vw, 46px);
+      overflow: hidden;
+      border-radius: 26px;
+      color: white;
+      background:
+        radial-gradient(circle at 100% 100%, rgba(190, 235, 126, .36), transparent 38%),
+        radial-gradient(circle at 10% 0%, rgba(217, 47, 135, .2), transparent 34%),
+        #17201c;
+      box-shadow: var(--shadow);
+    }
+    .bento__intro::after {
+      content: "";
+      position: absolute;
+      right: -60px;
+      bottom: -80px;
+      width: 210px;
+      height: 210px;
+      border: 1px solid rgba(219, 255, 176, .28);
+      border-radius: 50%;
+      box-shadow: 0 0 50px rgba(190, 235, 126, .12);
+    }
+    .bento__kicker {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 18px;
+      color: #d9f5ae;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+    .bento__title {
+      position: relative;
+      z-index: 1;
+      max-width: 500px;
+      margin: 0;
+      font-size: clamp(42px, 6vw, 68px);
+      line-height: .94;
+      letter-spacing: -.055em;
+    }
+    .bento__copy {
+      position: relative;
+      z-index: 1;
+      max-width: 470px;
+      margin: 18px 0 0;
+      color: rgba(255,255,255,.68);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    .bento__actions {
+      position: relative;
+      z-index: 1;
+      margin-top: 28px;
+    }
+    .booking-launch {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      min-height: 62px;
+      margin-top: 12px;
+      padding: 0 20px;
+      border-radius: 17px;
+      color: #17201c;
+      background: linear-gradient(105deg, #f1bfd9 0%, #efe1b9 45%, #bde98d 100%);
+      box-shadow: 0 16px 36px rgba(183, 225, 126, .12);
+    }
+    .booking-launch:hover { filter: saturate(1.08) brightness(1.03); }
+    .booking-launch__arrow {
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: rgba(23, 32, 28, .12);
+      font-size: 20px;
+    }
+    .bento__facts {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .fact-card {
+      min-height: 108px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: rgba(255,255,255,.76);
+    }
+    .fact-card__label {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .fact-card__value {
+      font-size: 18px;
+      font-weight: 850;
+      line-height: 1.25;
+    }
+    .fact-card--accent {
+      color: white;
+      border-color: transparent;
+      background: var(--accent);
+    }
+    .fact-card--accent .fact-card__label { color: rgba(255,255,255,.65); }
+
+    .process {
+      margin: 66px 0 20px;
+      padding: 0 4px;
+    }
+    .process__top {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 24px;
+      margin-bottom: 22px;
+    }
+    .process__title {
+      margin: 0;
+      font-size: clamp(34px, 6vw, 68px);
+      font-style: italic;
+      font-weight: 950;
+      line-height: .95;
+      letter-spacing: -.055em;
+      text-transform: uppercase;
+    }
+    .process__copy {
+      max-width: 400px;
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .process__steps {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .process__step {
+      min-height: 112px;
+      padding: 18px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: rgba(255,255,255,.68);
+    }
+    .process__number {
+      display: block;
+      margin-bottom: 20px;
+      color: var(--pink);
+      font-size: 12px;
+      font-weight: 900;
+    }
+    .process__step strong { font-size: 15px; }
+
+    .booking-overlay {
+      position: fixed;
+      z-index: 1000;
+      inset: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .booking-overlay.is-open {
+      visibility: visible;
+      pointer-events: auto;
+    }
+    .booking-backdrop {
+      position: absolute;
+      inset: 0;
+      border: 0;
+      opacity: 0;
+      background: rgba(16, 22, 19, .56);
+      backdrop-filter: blur(4px);
+      transition: opacity .28s ease;
+    }
+    .booking-overlay.is-open .booking-backdrop { opacity: 1; }
+    .booking-drawer {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: flex;
+      flex-direction: column;
+      width: min(540px, 100%);
+      height: 100dvh;
+      overflow: hidden;
+      background: var(--bg);
+      box-shadow: -24px 0 70px rgba(13, 20, 17, .2);
+      transform: translateX(102%);
+      transition: transform .32s cubic-bezier(.2,.75,.25,1);
+    }
+    .booking-overlay.is-open .booking-drawer { transform: translateX(0); }
+    .drawer__head {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      flex: 0 0 auto;
+      min-height: 76px;
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(244,241,236,.92);
+      backdrop-filter: blur(14px);
+    }
+    .drawer__kicker {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--pink);
+      font-size: 11px;
+      font-weight: 850;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .drawer__title {
+      margin: 0;
+      font-size: 19px;
+      letter-spacing: -.02em;
+    }
+    .drawer__close {
+      display: grid;
+      place-items: center;
+      flex: 0 0 42px;
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: white;
+      color: var(--text);
+      font-size: 23px;
+      line-height: 1;
+    }
+    .drawer__close:hover { border-color: var(--accent); }
+    .drawer__body {
+      flex: 1 1 auto;
+      overflow: auto;
+      overscroll-behavior: contain;
+    }
+    .booking-drawer .panel {
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      background: transparent;
+    }
+    .booking-drawer .step { padding: 24px 20px; }
+    .booking-drawer .cards { grid-template-columns: 1fr; }
+    .booking-drawer .slots { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .booking-drawer .summary { grid-template-columns: 1fr; }
+    .booking-drawer .field-grid { grid-template-columns: 1fr; }
+
+    .place {
+      margin-top: 64px;
+      box-shadow: var(--shadow);
+    }
+
+    @media (max-width: 860px) {
+      .bento { grid-template-columns: 1fr; }
+      .bento__gallery { grid-template-rows: 320px 180px; }
+      .bento__side { grid-template-rows: auto auto; }
+      .bento__intro { min-height: 390px; }
+      .process__steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 560px) {
+      .page {
+        width: min(100% - 20px, 1180px);
+        margin-top: 8px;
+      }
+      .topbar { min-height: 52px; }
+      .brand { font-size: 11px; }
+      .topbar .manage-last { display: none; }
+      .topbar__button { min-height: 38px; padding: 0 14px; font-size: 13px; }
+      .bento,
+      .bento__gallery,
+      .bento__side { gap: 9px; }
+      .bento__gallery {
+        grid-template-columns: 1fr;
+        grid-template-rows: 245px 170px 300px;
+      }
+      .bento__photo--interior { grid-column: auto; }
+      .bento__photo { border-radius: 21px; }
+      .bento__intro {
+        min-height: 390px;
+        padding: 28px 22px;
+        border-radius: 21px;
+      }
+      .bento__title { font-size: clamp(43px, 14vw, 58px); }
+      .bento__facts { gap: 9px; }
+      .fact-card { min-height: 100px; padding: 15px; border-radius: 18px; }
+      .fact-card__value { font-size: 15px; }
+      .process { margin-top: 46px; }
+      .process__top { align-items: flex-start; flex-direction: column; }
+      .process__title { font-size: 45px; }
+      .process__steps { grid-template-columns: 1fr 1fr; }
+      .process__step { min-height: 104px; padding: 15px; }
+      .place { margin-top: 46px; }
+      .booking-drawer { width: 100%; }
+      .drawer__head { min-height: 68px; padding: 10px 14px; }
+      .booking-drawer .step { padding: 22px 14px; }
+      .booking-drawer .slots { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
   </style>
 </head>
 <body>
   <main class="page">
-    <header class="hero">
-      <div class="hero__content">
-        <p class="eyebrow">Парикмахерская · онлайн-запись</p>
-        <h1>Время для свежего образа</h1>
-        <p class="hero__text">Выберите услугу, мастера и удобное время — без звонков и ожидания ответа.</p>
-        <div class="status" id="apiStatus">
-          <span class="status__dot"></span>
-          <span id="apiStatusText">Загружаем расписание…</span>
-        </div>
-        <br>
-        <a class="manage-last" id="manageLastBooking" href="cancel.html" hidden>
-          Управление последней записью
-        </a>
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand__mark" aria-hidden="true"></span>
+        <span>Парикмахерская</span>
       </div>
-      <div class="hero__visual">
-        <img src="assets/interior.jpg" alt="Интерьер парикмахерской" width="1279" height="749">
-        <span class="hero__badge">Ежедневно · 9:00–21:00</span>
+      <div class="topbar__actions">
+        <a class="manage-last" id="manageLastBooking" href="cancel.html" hidden>
+          Моя запись
+        </a>
+        <button class="topbar__button js-open-booking" type="button">
+          Записаться
+        </button>
       </div>
     </header>
+
+    <section class="bento" aria-labelledby="mainTitle">
+      <div class="bento__gallery">
+        <figure class="bento__photo bento__photo--interior">
+          <img src="assets/interior.jpg" alt="Интерьер парикмахерской" width="1279" height="749">
+          <figcaption class="bento__caption">Спокойно · уютно · без ожидания</figcaption>
+        </figure>
+        <figure class="bento__photo bento__photo--storefront">
+          <img src="assets/storefront.jpg" alt="Фасад парикмахерской с розовой подсветкой" width="1275" height="961">
+          <figcaption class="bento__caption">Розовая подсветка окон</figcaption>
+        </figure>
+        <figure class="bento__photo bento__photo--entrance">
+          <img src="assets/entrance.jpg" alt="Вход в парикмахерскую с улицы" width="764" height="1019">
+          <figcaption class="bento__caption">Вход прямо с улицы</figcaption>
+        </figure>
+      </div>
+
+      <div class="bento__side">
+        <article class="bento__intro">
+          <div>
+            <p class="bento__kicker">Онлайн-запись к мастеру</p>
+            <h1 class="bento__title" id="mainTitle">Время для свежего образа</h1>
+            <p class="bento__copy">Выберите услугу, мастера и удобное время — без звонков и ожидания ответа.</p>
+          </div>
+          <div class="bento__actions">
+            <div class="status" id="apiStatus">
+              <span class="status__dot"></span>
+              <span id="apiStatusText">Загружаем расписание…</span>
+            </div>
+            <button class="booking-launch js-open-booking" type="button">
+              <span>Выбрать время</span>
+              <span class="booking-launch__arrow" aria-hidden="true">→</span>
+            </button>
+          </div>
+        </article>
+
+        <div class="bento__facts">
+          <div class="fact-card fact-card--accent">
+            <span class="fact-card__label">Режим работы</span>
+            <span class="fact-card__value">Ежедневно<br>9:00–21:00</span>
+          </div>
+          <div class="fact-card">
+            <span class="fact-card__label">Формат</span>
+            <span class="fact-card__value">Запись без звонка</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="process" aria-labelledby="processTitle">
+      <div class="process__top">
+        <h2 class="process__title" id="processTitle">Запись без лишних шагов</h2>
+        <p class="process__copy">Расписание обновляется автоматически. Вы видите только доступные услуги, мастеров и свободное время.</p>
+      </div>
+      <div class="process__steps">
+        <div class="process__step"><span class="process__number">01</span><strong>Выберите услугу</strong></div>
+        <div class="process__step"><span class="process__number">02</span><strong>Определитесь с мастером</strong></div>
+        <div class="process__step"><span class="process__number">03</span><strong>Найдите удобное окно</strong></div>
+        <div class="process__step"><span class="process__number">04</span><strong>Оставьте контакты</strong></div>
+      </div>
+    </section>
+
+    <div class="booking-overlay" id="bookingOverlay" aria-hidden="true">
+      <button class="booking-backdrop js-close-booking" type="button" aria-label="Закрыть форму записи"></button>
+      <aside class="booking-drawer" id="bookingDrawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1">
+        <header class="drawer__head">
+          <div>
+            <span class="drawer__kicker">Четыре шага</span>
+            <h2 class="drawer__title" id="drawerTitle">Онлайн-запись</h2>
+          </div>
+          <button class="drawer__close js-close-booking" type="button" aria-label="Закрыть">×</button>
+        </header>
+        <div class="drawer__body">
 
     <section class="panel">
       <div class="step" id="serviceStep">
@@ -676,6 +1153,9 @@
         <div id="bookingSuccess" hidden></div>
       </div>
     </section>
+        </div>
+      </aside>
+    </div>
 
     <section class="place" aria-labelledby="placeTitle">
       <div class="place__head">
@@ -744,14 +1224,55 @@
       formDate: document.getElementById('formDate'),
       formTime: document.getElementById('formTime'),
       formRequestId: document.getElementById('formRequestId'),
-      manageLastBooking: document.getElementById('manageLastBooking')
+      manageLastBooking: document.getElementById('manageLastBooking'),
+      bookingOverlay: document.getElementById('bookingOverlay'),
+      bookingDrawer: document.getElementById('bookingDrawer')
     };
+
+    let bookingTrigger = null;
 
     function setApiStatus(type, text) {
       els.apiStatus.classList.remove('status--ok', 'status--error');
       if (type === 'ok') els.apiStatus.classList.add('status--ok');
       if (type === 'error') els.apiStatus.classList.add('status--error');
       els.apiStatusText.textContent = text;
+    }
+
+    function openBookingDrawer(trigger) {
+      bookingTrigger = trigger || document.activeElement;
+      els.bookingOverlay.classList.add('is-open');
+      els.bookingOverlay.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('drawer-open');
+
+      requestAnimationFrame(() => {
+        els.bookingDrawer.focus({ preventScroll: true });
+      });
+    }
+
+    function closeBookingDrawer() {
+      els.bookingOverlay.classList.remove('is-open');
+      els.bookingOverlay.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('drawer-open');
+
+      if (bookingTrigger && typeof bookingTrigger.focus === 'function') {
+        bookingTrigger.focus({ preventScroll: true });
+      }
+    }
+
+    function setupBookingDrawer() {
+      document.querySelectorAll('.js-open-booking').forEach(button => {
+        button.addEventListener('click', () => openBookingDrawer(button));
+      });
+
+      document.querySelectorAll('.js-close-booking').forEach(button => {
+        button.addEventListener('click', closeBookingDrawer);
+      });
+
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && els.bookingOverlay.classList.contains('is-open')) {
+          closeBookingDrawer();
+        }
+      });
     }
 
     function jsonp(params) {
@@ -1386,6 +1907,7 @@
     }
 
     async function init() {
+      setupBookingDrawer();
       updateLastBookingManagementLink();
 
       try {
